@@ -6,7 +6,12 @@
     <title>Accesso al Photobooth</title>
     <script>
         function checkScan() {
-            if (localStorage.getItem("qr_scanned")) {
+            if (localStorage.getItem("free_mode") === "yes") {
+                document.getElementById("message").innerHTML = "Modalità libera attiva! Puoi scattare senza limiti.";
+                document.getElementById("openHalo").style.display = "block";
+                document.getElementById("qrSection").style.display = "none";
+                document.getElementById("adminPanel").style.display = "block"; 
+            } else if (localStorage.getItem("qr_scanned")) {
                 document.getElementById("message").innerHTML = "Hai già scattato una foto! Non puoi accedere di nuovo.";
                 document.getElementById("openHalo").style.display = "none";
             } else {
@@ -19,12 +24,45 @@
             alert("Verifica completata! Ora puoi accedere al photobooth.");
             window.location.href = "halo://open"; // Apri l'app HALO
         }
+
+        function enableFreeMode() {
+            let passcode = prompt("Inserisci il codice segreto per attivare la modalità libera:");
+            if (passcode === "1234") { // Cambia questo codice con quello che preferisci
+                localStorage.setItem("free_mode", "yes");
+                alert("Modalità libera attivata! Ora chiunque può scattare foto senza limiti.");
+                checkScan(); 
+            } else {
+                alert("Codice errato! Accesso negato.");
+            }
+        }
+
+        function disableFreeMode() {
+            localStorage.removeItem("free_mode");
+            alert("Modalità libera disattivata! Torna alla modalità QR.");
+            location.reload();
+        }
     </script>
 </head>
 <body onload="checkScan()" style="text-align:center; font-family: Arial, sans-serif;">
     <h2>Scansiona il QR per accedere al Photobooth</h2>
-    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://tuo-sito.com/qr-verifica" alt="QR Code">
+    
+    <div id="qrSection">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://tuo-sito.com/qr-verifica" alt="QR Code">
+    </div>
+
     <p id="message"></p>
-    <button id="openHalo" onclick="confirmScan()" style="font-size:20px; padding:10px; cursor:pointer;">Ho scansionato il QR</button>
+    
+    <button id="openHalo" onclick="confirmScan()" style="font-size:20px; padding:10px; cursor:pointer; display:none;">
+        Ho scansionato il QR
+    </button>
+
+    <!-- Pulsante Admin (invisibile, premi in alto a sinistra per 5 secondi) -->
+    <div id="adminPanel" style="position: absolute; top: 10px; left: 10px; width: 30px; height: 30px; background-color: transparent;" 
+        onmousedown="setTimeout(enableFreeMode, 5000)">
+    </div>
+
+    <!-- Pulsante di uscita dalla modalità libera -->
+    <button onclick="disableFreeMode()" style="display: none;" id="disableFreeMode">Disattiva Modalità Libera</button>
+
 </body>
 </html>
