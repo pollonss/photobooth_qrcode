@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accesso al Photobooth</title>
+    <script>
+        function checkScan() {
+            if (localStorage.getItem("qr_scanned")) {
+                document.getElementById("message").innerHTML = "Hai già scattato una foto! Non puoi accedere di nuovo.";
+                document.getElementById("openHalo").style.display = "none";
+            } else {
+                document.getElementById("message").innerHTML = "Scansiona il QR per procedere.";
+            }
+        }
+
+        function confirmScan() {
+            localStorage.setItem("qr_scanned", "yes");
+            alert("Verifica completata! Ora puoi accedere al photobooth.");
+            window.location.href = "halo://open"; // Apri l'app HALO
+        }
+    </script>
+</head>
+<body onload="checkScan()" style="text-align:center; font-family: Arial, sans-serif;">
+    <h2>Scansiona il QR per accedere al Photobooth</h2>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://tuo-sito.com/qr-verifica" alt="QR Code">
+    <p id="message"></p>
+    <button id="openHalo" onclick="confirmScan()" style="font-size:20px; padding:10px; cursor:pointer;">Ho scansionato il QR</button>
+</body>
+</html>
